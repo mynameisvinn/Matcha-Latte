@@ -10,13 +10,17 @@ POSTGRES_DBNAME = 'playerslounge_prod'  # CHANGE THIS TO YOUR DATABASE NAME
 
 
 def fetch_dataset(title: str) -> pd.DataFrame:
+    """Fetch historical outcomes and returns a dataframe.
+    """
     query = _format_query(title)
-    df = fetch(query)
+    df = _fetch_panoply(query)
     data = query2outcomes(df)
     return data
 
 
-def fetch(query):
+def _fetch_panoply(query):
+    """Retrieves raw data from Panoply database.
+    """
     postgres_str = ('postgresql://{username}:{password}@{ipaddress}:{port}/{dbname}'.
         format(username=POSTGRES_USERNAME,
             password=POSTGRES_PASSWORD,
@@ -28,7 +32,23 @@ def fetch(query):
     return pd.read_sql_query(query, cnx)
 
 
+def _format_query(title):
+    """Construct query string given game title.
+    """
+    query = """
+    select contests.id, contests.__updatetime, contests.type, contests_plrsbefore.plr, contests.winner, contests.loser, contests_plrsbefore.userid, contests.status
+    from contests
+    inner join contests_plrsbefore
+    on contests.id = contests_plrsbefore.contests_id
+    where contests.console_game = '{}'
+    """.format(title)
+    
+    return query
+
+
 def query2outcomes(df):
+    """Convert raw dataframe into processed dataframe
+    """
 
     lookup = {}  # k=contest id, v=win/loss/time
 
@@ -65,13 +85,3 @@ def query2outcomes(df):
     return data
 
 
-def _format_query(title):
-    query = """
-    select contests.id, contests.__updatetime, contests.type, contests_plrsbefore.plr, contests.winner, contests.loser, contests_plrsbefore.userid, contests.status
-    from contests
-    inner join contests_plrsbefore
-    on contests.id = contests_plrsbefore.contests_id
-    where contests.console_game = '{}'
-    """.format(title)
-
-    return query

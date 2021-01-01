@@ -1,1 +1,1 @@
-from .db import fetch, query2outcomes, fetch_dataset
+from .db import fetch
