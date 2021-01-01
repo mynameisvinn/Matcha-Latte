@@ -1,5 +1,7 @@
+[![Build Status](https://travis-ci.com/mynameisvinn/Matcha.svg?branch=master)](https://travis-ci.com/mynameisvinn/Matcha)
+
 # Matcha Latte
-Matcha Latte is a testing environment to develop algorithms for skill-based matchmaking.
+Matcha Latte is a testbed to develop algorithms for skill-based matchmaking.
 
 ## Quickstart
 ### Fetching historical matches
