@@ -24,3 +24,10 @@ path = "datasets/ps4-madden19.csv"
 outcomes = pd.read_csv(path)  
 res = calculate_accuracy(outcomes)  # accuracy
 ```
+## Testing
+```bash
+pip install -e .
+pytest
+
+tox -e flake8
+```
