@@ -21,14 +21,14 @@ def fetch_dataset(title: str) -> pd.DataFrame:
 def _fetch_panoply(query):
     """Retrieves raw data from Panoply database.
     """
-    postgres_str = ('postgresql://{username}:{password}@{ipaddress}:{port}/{dbname}'.
-        format(username=POSTGRES_USERNAME,
-            password=POSTGRES_PASSWORD,
-            ipaddress=POSTGRES_ADDRESS,
-            port=POSTGRES_PORT,
-            dbname=POSTGRES_DBNAME))
+    p = ('postgresql://{u}:{password}@{ipaddress}:{port}/{dbname}'.format(
+                    u=POSTGRES_USERNAME,
+                    password=POSTGRES_PASSWORD,
+                    ipaddress=POSTGRES_ADDRESS,
+                    port=POSTGRES_PORT,
+                    dbname=POSTGRES_DBNAME))
 
-    cnx = create_engine(postgres_str)
+    cnx = create_engine(p)
     return pd.read_sql_query(query, cnx)
 
 
@@ -36,13 +36,15 @@ def _format_query(title):
     """Construct query string given game title.
     """
     query = """
-    select contests.id, contests.__updatetime, contests.type, contests_plrsbefore.plr, contests.winner, contests.loser, contests_plrsbefore.userid, contests.status
+    select contests.id, contests.__updatetime, contests.type,
+    contests_plrsbefore.plr, contests.winner, contests.loser,
+    contests_plrsbefore.userid, contests.status
     from contests
     inner join contests_plrsbefore
     on contests.id = contests_plrsbefore.contests_id
     where contests.console_game = '{}'
     """.format(title)
-    
+
     return query
 
 
@@ -79,9 +81,8 @@ def query2outcomes(df):
         loser.append(v['loser'])
         time.append(v['time'])
 
-    outcomes = {'contest': contest, 'winner': winner, 'loser': loser, 'time': time}
-    
+    outcomes = {'contest': contest, 'winner': winner,
+                'loser': loser, 'time': time}
+
     data = pd.DataFrame.from_dict(outcomes)
     return data
-
-
